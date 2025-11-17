@@ -1,19 +1,18 @@
 {
   "mcpServers": {
-    "local-stdio-calculator": {
+    "aws-proxy-gateway": {
       "type": "stdio",
-      "command": "python",
-      "args": ["-m", "calculator"]
-    },
-    "remote-sse-server": {
-      "type": "sse",
-      "url": "https://api.example.com/sse",
-      "disabled": true
-    },
-    "remote-http-server": {
-      "type": "http",
-      "url": "https://api.example.com/mcp",
-      "disabled": true
+      "command": "uvx",
+      "args": [
+        "mcp-proxy-for-aws@latest",
+        "https://xiaozhi-mfyvjzuqpk.gateway.bedrock-agentcore.us-west-2.amazonaws.com/mcp",
+        "--region",
+        "us-west-2",
+        "--log-level",
+        "DEBUG",
+        "--service",
+        "bedrock-agentcore"
+      ]
     }
   }
 }

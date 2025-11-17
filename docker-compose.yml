@@ -1,0 +1,34 @@
+services:
+  mcp-pipe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-pipe-bridge
+    restart: always
+    # Use host network to access EC2 metadata service (169.254.169.254)
+    network_mode: "host"
+    env_file:
+      - .env
+    environment:
+      - MCP_CONFIG=/app/mcp_config.json
+      # AWS configuration (will use EC2 instance profile if on EC2)
+      - AWS_REGION=${AWS_REGION:-us-west-2}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-west-2}
+    volumes:
+      # Mount config file as read-only for easy updates without rebuild
+      - ./mcp_config.json:/app/mcp_config.json:ro
+      # Optional: mount AWS credentials if not using EC2 instance profile
+      # Uncomment the following line if you want to use local AWS credentials
+      # - ${HOME}/.aws:/home/mcpuser/.aws:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Health check runs every 30 seconds
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
